@@ -5,34 +5,40 @@ import { C, THEME, CSS, Nav } from "./Portfolio.jsx";
 /* Page content. The tool list itself lives in C.openSource (Portfolio.jsx). */
 const L = {
   eyebrow: "Wazuh Ambassador · Pakistan",
-  title: "Open Source Lab",
-  lead: "Detection content, dashboards and plugins I build for the Wazuh community. Free to use, documented step by step, and published on GitHub.",
+  title: "Community Contributions",
+  lead: "Selected by Wazuh as an Ambassador. Here is my official profile, followed by the free tools I build and publish for the community.",
+  profileAlt: "Hamza Jameel's official Wazuh Ambassador profile: Senior Endpoint Security Engineer, Pakistan, with bio and quote.",
+  profileLink: "https://wazuh.com/ambassadors-program/",
   explore: "Explore the tools",
   articlesHeading: "Read the write-ups",
   articlesIntro: "How each project works, why it exists, and how to deploy it.",
   ctaHeading: "Want one of these running in your environment?",
   ctaBody: "I deploy, tune and extend these for SOC teams and MSSPs. Tell me about your setup and I'll scope it on a short call.",
   ctaBtn: "Book a call",
-  photo: "/ambassador-hero.jpg",
-  photoBlur: "/ambassador-hero-blur.jpg",
+  profile: "/ambassador-profile.png",
+  bgBlur: "/ambassador-profile-blur.jpg",
 };
 
 const LAB_CSS = `
   .lab { color: var(--dark-muted); background: var(--dark-1); min-height: 100vh; position: relative; }
   .lab .nav { position: fixed; left: 0; right: 0; }
-  .lab-bg, .lab-bg-blur, .lab-shade { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-  .lab-bg, .lab-bg-blur { background-size: cover; background-position: 72% center; background-repeat: no-repeat; background-color: #E2EEFE; }
-  .lab-bg-blur { transform: scale(1.04); }
-  .lab-shade { background: linear-gradient(180deg, rgba(10,14,26,.82), rgba(10,14,26,.92)); }
+  .lab-bg, .lab-shade { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .lab-bg { background-size: cover; background-position: center; transform: scale(1.08); }
+  .lab-shade { background: linear-gradient(180deg, rgba(10,14,26,.55), rgba(10,14,26,.88)); }
   .lab-body { position: relative; z-index: 1; }
 
-  .lab-hero { min-height: 100vh; min-height: 100svh; display: flex; align-items: center; padding: 120px 0 80px; }
-  .lab-hero .inner { max-width: 560px; }
-  .lab-eyebrow { font-size: 15px; font-weight: 600; color: var(--accent); }
-  .lab-hero h1 { font-size: clamp(48px, 8vw, 96px); font-weight: 700; line-height: .95; letter-spacing: -0.035em; margin: 14px 0 22px; color: var(--ink); }
-  .lab-hero p { font-size: 19px; color: #3A4256; max-width: 480px; margin-bottom: 32px; }
-  .lab-hero .acts { display: flex; gap: 10px; flex-wrap: wrap; }
-  .lab-hero .scroll-cue { margin-top: 56px; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--sub); }
+  .lab-hero { padding: 128px 0 70px; }
+  .lab-intro { max-width: 760px; margin: 0 auto 34px; text-align: center; }
+  .lab-eyebrow { font-size: 15px; font-weight: 600; color: #7FA6FF; }
+  .lab-hero h1 { font-size: clamp(38px, 6vw, 68px); font-weight: 700; line-height: 1; letter-spacing: -0.03em; margin: 12px 0 18px; color: #fff; }
+  .lab-hero p { font-size: 18px; color: #C3CDE0; }
+  .profile-wrap { max-width: 1376px; margin: 0 auto; padding: 0 20px; }
+  .profile-frame { display: block; border-radius: 18px; overflow: hidden; border: 1px solid rgba(255,255,255,.14);
+                   box-shadow: 0 40px 90px -30px rgba(0,0,0,.7); background: #26282e; transition: transform .3s, border-color .3s; }
+  .profile-frame:hover { border-color: rgba(127,166,255,.6); }
+  .profile-frame img { display: block; width: 100%; height: auto; image-rendering: auto; }
+  .profile-cap { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 28px; }
+  .profile-tip { display: none; text-align: center; font-size: 13px; color: var(--dark-muted); margin-top: 12px; }
 
   .lab-sec { padding: 40px 0 90px; }
   .lab-head { max-width: 640px; margin-bottom: 34px; }
@@ -73,9 +79,10 @@ const LAB_CSS = `
   @media (max-width: 900px) {
     .tool-grid, .lab-cta { grid-template-columns: 1fr; }
     .lab-cta { padding: 30px; } .lab-cta .acts { justify-content: flex-start; }
-    .lab-bg, .lab-bg-blur { background-size: 230% auto; background-position: 80% 60px; }
-    .lab-hero { align-items: flex-start; padding-top: min(130vw, 520px); padding-bottom: 50px; }
-    .lab-hero p { font-size: 17px; }
+    .lab-hero { padding-top: 112px; }
+    .lab-hero p { font-size: 16px; }
+    .profile-wrap { padding: 0 12px; }
+    .profile-tip { display: block; }
   }
 `;
 
@@ -95,23 +102,26 @@ export default function OpenSource() {
   return (
     <div className="pf lab">
       <style>{THEME}{CSS}{LAB_CSS}</style>
-      <div className="lab-bg" style={{ backgroundImage: `url(${L.photo})` }} aria-hidden="true" />
-      <div className="lab-bg-blur" style={{ backgroundImage: `url(${L.photoBlur})`, opacity: p }} aria-hidden="true" />
-      <div className="lab-shade" style={{ opacity: p * 0.9 }} aria-hidden="true" />
+      <div className="lab-bg" style={{ backgroundImage: `url(${L.bgBlur})` }} aria-hidden="true" />
+      <div className="lab-shade" style={{ opacity: 0.55 + p * 0.45 }} aria-hidden="true" />
 
       <Nav base="../" current="lab" />
 
       <div className="lab-body">
-        <header className="lab-hero" style={{ opacity: 1 - p * 0.9 }}>
-          <div className="wrap" style={{ width: "100%" }}>
-            <div className="inner">
-              <div className="lab-eyebrow">{L.eyebrow}</div>
-              <h1>{L.title}</h1>
-              <p>{L.lead}</p>
-              <div className="acts">
-                <a href="#tools" className="btn btn--accent">{L.explore} <ArrowDown size={16} /></a>
-                <a href={C.socials.github} target="_blank" rel="noopener noreferrer" className="btn btn--white"><Github size={16} /> GitHub profile</a>
-              </div>
+        <header className="lab-hero">
+          <div className="wrap lab-intro">
+            <div className="lab-eyebrow">{L.eyebrow}</div>
+            <h1>{L.title}</h1>
+            <p>{L.lead}</p>
+          </div>
+          <div className="profile-wrap" style={{ opacity: 1 - p * 0.35 }}>
+            <a className="profile-frame" href={L.profile} target="_blank" rel="noopener noreferrer" title="Open full size">
+              <img src={L.profile} alt={L.profileAlt} width="1336" height="856" />
+            </a>
+            <p className="profile-tip">Tap the profile to open it full size.</p>
+            <div className="profile-cap">
+              <a href="#tools" className="btn btn--accent">{L.explore} <ArrowDown size={16} /></a>
+              <a href={L.profileLink} target="_blank" rel="noopener noreferrer" className="btn btn--ghost">Wazuh Ambassadors program <ArrowUpRight size={15} /></a>
             </div>
           </div>
         </header>

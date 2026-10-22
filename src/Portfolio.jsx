@@ -29,7 +29,7 @@ export const C = {
     { label: "Client work", href: "#projects" },
     { label: "Contact", href: "#contact" },
   ],
-  lab: { label: "Open Source Lab", href: "open-source/" },
+  lab: { label: "Wazuh Ambassador", href: "open-source/" },
   hero: {
     pill: "Wazuh Ambassador · Available for freelance work",
     pillLink: "https://wazuh.com/ambassadors-program/",
