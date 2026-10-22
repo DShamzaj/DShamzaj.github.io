@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dshamzaj.github.io/sitemap.xml
