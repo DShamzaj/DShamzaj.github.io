@@ -29,7 +29,12 @@ export const C = {
     { label: "Client work", href: "#projects" },
     { label: "Contact", href: "#contact" },
   ],
-  lab: { label: "Wazuh Ambassador", href: "open-source/" },
+  navTop: [
+    { label: "Services", href: "#services" },
+    { label: "Client work", href: "#projects" },
+  ],
+  lab: { label: "Community Contributions", href: "open-source/" },
+  news: { label: "Newsletter", href: "newsletter/" },
   hero: {
     pill: "Wazuh Ambassador · Available for freelance work",
     pillLink: "https://wazuh.com/ambassadors-program/",
@@ -158,7 +163,27 @@ export const C = {
 
 /* Web3Forms public access key — sends contact-form messages to your inbox.
    Safe to keep in site code (it can only deliver form messages to you). */
-const WEB3FORMS_KEY = "4cdaa759-02ea-4d8e-a500-26645b81270a";
+export const WEB3FORMS_KEY = "4cdaa759-02ea-4d8e-a500-26645b81270a";
+
+/* Sends a message to your inbox through Web3Forms. Returns true on success. */
+export async function sendToInbox(fields) {
+  try {
+    const res = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ access_key: WEB3FORMS_KEY, ...fields }),
+    });
+    const data = await res.json();
+    return !!data.success;
+  } catch { return false; }
+}
+
+export const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v).trim());
+
+/* Official brand marks (files in public/brand/). */
+export const BrandIcon = ({ name }) => (
+  <img className={`bico bico--${name}`} src={`/brand/${name}.png`} alt="" aria-hidden="true" width="18" height="18" />
+);
 
 /* ============================================================
    THEME — every color is a variable.
@@ -240,7 +265,8 @@ export const CSS = `
   .logo { line-height: 1; }
   .logo .t { font-family: var(--f-disp); font-weight: 700; font-size: 19px; color: var(--ink); }
   .logo .s { display: block; font-family: var(--f-disp); font-weight: 600; font-size: 9px; letter-spacing: .16em; color: var(--accent); margin-top: 2px; }
-  .nav-links { display: flex; gap: 28px; }
+  .nav-links { display: flex; gap: 26px; align-items: center; }
+  .nav-links a, .nav-right .btn { white-space: nowrap; }
   .nav-links a { color: var(--body); font-size: 15px; font-weight: 500; }
   .nav-links a:hover { color: var(--ink); }
   .nav-links a.lab-link { color: var(--accent-text); font-weight: 600; display: inline-flex; align-items: center; gap: 7px; }
@@ -334,6 +360,10 @@ export const CSS = `
   .proj-view { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--accent-text); }
   .proj-view span { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; }
 
+  .bico { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 0 1.5px rgba(255,255,255,.9); }
+  .bico--linkedin { border-radius: 5px; }
+  .btn--sm .bico { width: 18px; height: 18px; }
+  .hero-msg { font-size: 14px; margin-top: 12px; color: var(--accent-text); } .hero-msg.err { color: #F08A73; }
   .pill { max-width: 100%; }
   .emailbar { width: 100%; box-sizing: border-box; } .emailbar input { min-width: 0; } .emailbar .btn { flex-shrink: 0; white-space: nowrap; }
   @media (max-width: 420px) { .pill { font-size: 12px; padding: 7px 12px; } .emailbar .btn { padding-left: 16px; padding-right: 16px; } }
@@ -442,6 +472,7 @@ export const CSS = `
     .ci-grid, .two, .foot-grid { grid-template-columns: 1fr 1fr; }
   }
   @media (max-width: 560px) { .ci-grid, .two, .foot-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 1199px) { .nav-links { display: none; } .nav-right .btn { display: none; } .nav-toggle { display: block; } }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 `;
 
@@ -616,28 +647,28 @@ function Mock({ kind }) {
 export function Nav({ base = "", current = "" }) {
   const [menu, setMenu] = useState(false);
   const href = (h) => (base ? base + h : h);
-  const labHref = base ? "./" : C.lab.href;
+  const pages = [["lab", C.lab], ["news", C.news]];
   return (
     <nav className="nav">
       <div className="nav-inner">
         <a href={href("#home")} className="logo"><span className="t">{C.brandTop}</span><span className="s">{C.brandSub}</span></a>
         <div className="nav-links">
-          {C.nav.map((n) => <a key={n.label} href={href(n.href)}>{n.label}</a>)}
-          <a href={labHref} className={`lab-link ${current === "lab" ? "current" : ""}`} aria-current={current === "lab" ? "page" : undefined}>{C.lab.label}</a>
+          {C.navTop.map((n) => <a key={n.label} href={href(n.href)}>{n.label}</a>)}
+          {pages.map(([k, pg]) => <a key={k} href={base + pg.href} className={`lab-link ${current === k ? "current" : ""}`} aria-current={current === k ? "page" : undefined}>{pg.label}</a>)}
         </div>
         <div className="nav-right">
-          <a href={C.socials.fiverr} target="_blank" rel="noopener noreferrer" className="btn btn--fiverr btn--sm">Fiverr</a>
-          <a href={C.socials.upwork} target="_blank" rel="noopener noreferrer" className="btn btn--upwork btn--sm">Upwork</a>
+          <a href={C.socials.fiverr} target="_blank" rel="noopener noreferrer" className="btn btn--fiverr btn--sm"><BrandIcon name="fiverr" /> Fiverr</a>
+          <a href={C.socials.upwork} target="_blank" rel="noopener noreferrer" className="btn btn--upwork btn--sm"><BrandIcon name="upwork" /> Upwork</a>
           <a href={href("#contact")} className="btn btn--accent btn--sm">Book a call</a>
           <button className="nav-toggle" onClick={() => setMenu(!menu)} aria-label="Menu">{menu ? <X /> : <Menu />}</button>
         </div>
       </div>
       {menu && <div className="wrap mobile">
         {C.nav.map((n) => <a key={n.label} href={href(n.href)} onClick={() => setMenu(false)}>{n.label}</a>)}
-        <a href={labHref} className="lab-link" onClick={() => setMenu(false)}>{C.lab.label}</a>
+        {pages.map(([k, pg]) => <a key={k} href={base + pg.href} className="lab-link" onClick={() => setMenu(false)}>{pg.label}</a>)}
         <div className="row">
-          <a href={C.socials.fiverr} target="_blank" rel="noopener noreferrer" className="btn btn--fiverr btn--sm">Fiverr</a>
-          <a href={C.socials.upwork} target="_blank" rel="noopener noreferrer" className="btn btn--upwork btn--sm">Upwork</a>
+          <a href={C.socials.fiverr} target="_blank" rel="noopener noreferrer" className="btn btn--fiverr btn--sm"><BrandIcon name="fiverr" /> Fiverr</a>
+          <a href={C.socials.upwork} target="_blank" rel="noopener noreferrer" className="btn btn--upwork btn--sm"><BrandIcon name="upwork" /> Upwork</a>
           <a href={href("#contact")} className="btn btn--accent btn--sm" onClick={() => setMenu(false)}>Book a call</a>
         </div>
       </div>}
@@ -649,6 +680,14 @@ export default function Portfolio() {
   const [faqCat, setFaqCat] = useState(Object.keys(C.faq.categories)[0]);
   const [openQ, setOpenQ] = useState(0);
   const [form, setForm] = useState({ first: "", last: "", email: "", company: "", msg: "" });
+  const [heroEmail, setHeroEmail] = useState("");
+  const [heroState, setHeroState] = useState("");
+  const heroSubmit = async () => {
+    if (!isEmail(heroEmail)) { setHeroState("bad"); return; }
+    setHeroState("sending");
+    const ok = await sendToInbox({ subject: `Portfolio: ${heroEmail} wants to get in touch`, from_name: "Portfolio hero form", email: heroEmail, replyto: heroEmail, message: "Submitted from the 'Get in touch' box at the top of the home page." });
+    setHeroState(ok ? "ok" : "err"); if (ok) setHeroEmail("");
+  };
   const [status, setStatus] = useState("idle"); // idle | sending | success | error
   const [formError, setFormError] = useState("");
   const [botcheck, setBotcheck] = useState(false);
@@ -701,7 +740,10 @@ export default function Portfolio() {
             <a className="pill" href={C.hero.pillLink} target="_blank" rel="noopener noreferrer"><span className="dot" />{C.hero.pill}</a>
             <h1>{C.hero.line1}<br />{C.hero.line2}<br />{C.hero.line3Lead} <span className="gray">{C.hero.line3Gray}</span><span className="tw-line"><Typewriter words={C.hero.rotating} /></span></h1>
             <p className="lead">{C.hero.subtitle}</p>
-            <div className="emailbar"><input placeholder={C.hero.inputPlaceholder} /><a href="#contact" className="btn btn--accent">{C.hero.cta}</a></div>
+            <div className="emailbar"><input type="email" aria-label="Your email" placeholder={C.hero.inputPlaceholder} value={heroEmail} onChange={(e) => { setHeroEmail(e.target.value); setHeroState(""); }} onKeyDown={(e) => e.key === "Enter" && heroSubmit()} /><button className="btn btn--accent" onClick={heroSubmit} disabled={heroState === "sending"}>{heroState === "sending" ? "Sending…" : C.hero.cta}</button></div>
+            {heroState === "ok" && <p className="hero-msg" role="status">Thanks. I'll email you within 24 hours.</p>}
+            {heroState === "bad" && <p className="hero-msg err" role="alert">Enter a valid email address.</p>}
+            {heroState === "err" && <p className="hero-msg err" role="alert">That didn't send. Email me at {C.contact.email}.</p>}
           </div>
           <Reveal>
             <div className="code">
@@ -786,9 +828,9 @@ export default function Portfolio() {
                 {C.about.body.map((p, i) => <p key={i}>{p}</p>)}
                 <div className="about-btns">
                   <a href={C.socials.github} target="_blank" rel="noopener noreferrer" className="btn btn--white btn--sm"><Github size={16} /> GitHub</a>
-                  <a href={C.socials.linkedin} target="_blank" rel="noopener noreferrer" className="btn btn--linkedin btn--sm"><Linkedin size={16} /> LinkedIn</a>
-                  <a href={C.socials.fiverr} target="_blank" rel="noopener noreferrer" className="btn btn--fiverr btn--sm">Fiverr</a>
-                  <a href={C.socials.upwork} target="_blank" rel="noopener noreferrer" className="btn btn--upwork btn--sm">Upwork</a>
+                  <a href={C.socials.linkedin} target="_blank" rel="noopener noreferrer" className="btn btn--linkedin btn--sm"><BrandIcon name="linkedin" /> LinkedIn</a>
+                  <a href={C.socials.fiverr} target="_blank" rel="noopener noreferrer" className="btn btn--fiverr btn--sm"><BrandIcon name="fiverr" /> Fiverr</a>
+                  <a href={C.socials.upwork} target="_blank" rel="noopener noreferrer" className="btn btn--upwork btn--sm"><BrandIcon name="upwork" /> Upwork</a>
                 </div>
               </div>
             </div>
@@ -847,7 +889,7 @@ export default function Portfolio() {
               <ul className="assure">{C.contact.assurances.map((a, i) => <li key={i}><span className="c"><Check size={13} /></span>{a}</li>)}</ul>
               <div className="ci-grid">
                 <div className="ci"><span className="ico"><Mail size={17} /></span><span><span className="lab">Email</span><div className="val">{C.contact.email}</div></span></div>
-                <a className="ci" href={C.socials.linkedin} target="_blank" rel="noopener noreferrer"><span className="ico"><Linkedin size={17} /></span><span><span className="lab">LinkedIn</span><div className="val">/in/hamzahx10</div></span></a>
+                <a className="ci" href={C.socials.linkedin} target="_blank" rel="noopener noreferrer"><span className="ico"><BrandIcon name="linkedin" /></span><span><span className="lab">LinkedIn</span><div className="val">/in/hamzahx10</div></span></a>
                 <div className="ci"><span className="ico"><MapPin size={17} /></span><span><span className="lab">Based in</span><div className="val">{C.contact.basedIn}</div></span></div>
                 <div className="ci"><span className="ico"><Clock size={17} /></span><span><span className="lab">Response time</span><div className="val">{C.contact.responseTime}</div></span></div>
               </div>
@@ -875,7 +917,7 @@ export default function Portfolio() {
         <footer className="footer">
           <div className="wrap foot-grid">
             <div className="foot-brand"><a href="#home" className="logo"><span className="t" style={{ color: "#fff" }}>{C.brandTop}</span><span className="s">{C.brandSub}</span></a><p>Independent security engineering — SIEM, detection, automation, and endpoint hardening for teams that want to scale their defense without the overhead.</p></div>
-            <div className="foot-col"><h4>Navigate</h4>{C.nav.map((n) => <a key={n.label} href={n.href}>{n.label}</a>)}<a href={C.lab.href}>{C.lab.label}</a></div>
+            <div className="foot-col"><h4>Navigate</h4>{C.nav.map((n) => <a key={n.label} href={n.href}>{n.label}</a>)}<a href={C.lab.href}>{C.lab.label}</a><a href={C.news.href}>{C.news.label}</a></div>
             <div className="foot-col"><h4>Freelance</h4><a href={C.socials.fiverr} target="_blank" rel="noopener noreferrer">Fiverr</a><a href={C.socials.upwork} target="_blank" rel="noopener noreferrer">Upwork</a><a href={C.socials.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a><a href={C.socials.github} target="_blank" rel="noopener noreferrer">GitHub</a></div>
             <div className="foot-col"><h4>Contact</h4><a href={`mailto:${C.contact.email}`}>{C.contact.email}</a><a href="#contact">Book a call</a></div>
           </div>

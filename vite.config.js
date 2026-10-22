@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 
-// Two pages: the main portfolio (index.html) and the Open Source Lab (open-source/index.html).
+// Three pages: the main portfolio (index.html) the Community Contributions page (open-source/index.html) and the newsletter (newsletter/index.html).
 export default defineConfig({
   plugins: [react()],
   base: './',
@@ -11,6 +11,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         openSource: resolve(__dirname, 'open-source/index.html'),
+        newsletter: resolve(__dirname, 'newsletter/index.html'),
       },
     },
   },

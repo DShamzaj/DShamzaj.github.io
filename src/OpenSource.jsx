@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ArrowRight, ArrowUpRight, ArrowDown, Github } from "lucide-react";
-import { C, THEME, CSS, Nav } from "./Portfolio.jsx";
+import { C, THEME, CSS, Nav, BrandIcon } from "./Portfolio.jsx";
 
 /* Page content. The tool list itself lives in C.openSource (Portfolio.jsx). */
 const L = {
@@ -171,8 +171,8 @@ export default function OpenSource() {
               <div><h2>{L.ctaHeading}</h2><p>{L.ctaBody}</p></div>
               <div className="acts">
                 <a href="../#contact" className="btn btn--accent">{L.ctaBtn} <ArrowRight size={16} /></a>
-                <a href={C.socials.fiverr} target="_blank" rel="noopener noreferrer" className="btn btn--fiverr">Fiverr</a>
-                <a href={C.socials.upwork} target="_blank" rel="noopener noreferrer" className="btn btn--upwork">Upwork</a>
+                <a href={C.socials.fiverr} target="_blank" rel="noopener noreferrer" className="btn btn--fiverr"><BrandIcon name="fiverr" /> Fiverr</a>
+                <a href={C.socials.upwork} target="_blank" rel="noopener noreferrer" className="btn btn--upwork"><BrandIcon name="upwork" /> Upwork</a>
               </div>
             </div>
             <p className="lab-note">{C.openSource.disclaimer}</p>
