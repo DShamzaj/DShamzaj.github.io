@@ -11,7 +11,7 @@ const PHOTO = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUEBAQEAw
    CONTENT — Hamza Jameel. Edit values here; project screenshots
    and reference links can be dropped in later.
    ============================================================ */
-const C = {
+export const C = {
   brandTop: "Hamza",
   brandSub: "JAMEEL",
   fullName: "Hamza Jameel",
@@ -26,10 +26,10 @@ const C = {
   nav: [
     { label: "Home", href: "#home" },
     { label: "Services", href: "#services" },
-    { label: "Open Source", href: "#open-source" },
     { label: "Client work", href: "#projects" },
     { label: "Contact", href: "#contact" },
   ],
+  lab: { label: "Open Source Lab", href: "open-source/" },
   hero: {
     pill: "Wazuh Ambassador · Available for freelance work",
     pillLink: "https://wazuh.com/ambassadors-program/",
@@ -163,7 +163,7 @@ const WEB3FORMS_KEY = "4cdaa759-02ea-4d8e-a500-26645b81270a";
 /* ============================================================
    THEME — every color is a variable.
    ============================================================ */
-const THEME = `
+export const THEME = `
   :root {
     --accent:      #2F6BF6;
     --accent-press:#2456d6;
@@ -201,7 +201,7 @@ const THEME = `
   }
 `;
 
-const CSS = `
+export const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Caveat:wght@600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
   .pf { font-family: var(--f-body); color: var(--body); -webkit-font-smoothing: antialiased; line-height: 1.6; overflow-x: hidden;
@@ -242,6 +242,10 @@ const CSS = `
   .nav-links { display: flex; gap: 28px; }
   .nav-links a { color: var(--body); font-size: 15px; font-weight: 500; }
   .nav-links a:hover { color: var(--ink); }
+  .nav-links a.lab-link { color: var(--accent); font-weight: 600; display: inline-flex; align-items: center; gap: 7px; }
+  .nav-links a.lab-link::before, .mobile a.lab-link::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-ring); }
+  .nav-links a.lab-link.current { color: var(--ink); }
+  .mobile a.lab-link { color: var(--accent); font-weight: 600; display: flex; align-items: center; gap: 9px; }
   .nav-right { display: flex; align-items: center; gap: 9px; }
   .nav-toggle { display: none; background: none; border: none; color: var(--ink); cursor: pointer; }
   .mobile { display: none; }
@@ -436,7 +440,7 @@ const CSS = `
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 `;
 
-const U = ({ children }) => (
+export const U = ({ children }) => (
   <span className="ul">{children}
     <svg viewBox="0 0 300 24" preserveAspectRatio="none"><path d="M6,15 C60,6 110,20 160,12 C210,5 260,17 294,9" /></svg>
   </span>
@@ -444,7 +448,7 @@ const U = ({ children }) => (
 
 const prefersReduced = () => typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const Reveal = ({ children, delay = 0 }) => {
+export const Reveal = ({ children, delay = 0 }) => {
   const ref = useRef(null);
   useEffect(() => {
     const el = ref.current; if (!el) return;
@@ -602,8 +606,41 @@ function Mock({ kind }) {
   );
 }
 
-export default function Portfolio() {
+/* Top menu, shared by the home page and the Open Source Lab page.
+   base = "" on the home page, "../" on sub-pages. */
+export function Nav({ base = "", current = "" }) {
   const [menu, setMenu] = useState(false);
+  const href = (h) => (base ? base + h : h);
+  const labHref = base ? "./" : C.lab.href;
+  return (
+    <nav className="nav">
+      <div className="nav-inner">
+        <a href={href("#home")} className="logo"><span className="t">{C.brandTop}</span><span className="s">{C.brandSub}</span></a>
+        <div className="nav-links">
+          {C.nav.map((n) => <a key={n.label} href={href(n.href)}>{n.label}</a>)}
+          <a href={labHref} className={`lab-link ${current === "lab" ? "current" : ""}`} aria-current={current === "lab" ? "page" : undefined}>{C.lab.label}</a>
+        </div>
+        <div className="nav-right">
+          <a href={C.socials.fiverr} target="_blank" rel="noopener noreferrer" className="btn btn--fiverr btn--sm">Fiverr</a>
+          <a href={C.socials.upwork} target="_blank" rel="noopener noreferrer" className="btn btn--upwork btn--sm">Upwork</a>
+          <a href={href("#contact")} className="btn btn--accent btn--sm">Book a call</a>
+          <button className="nav-toggle" onClick={() => setMenu(!menu)} aria-label="Menu">{menu ? <X /> : <Menu />}</button>
+        </div>
+      </div>
+      {menu && <div className="wrap mobile">
+        {C.nav.map((n) => <a key={n.label} href={href(n.href)} onClick={() => setMenu(false)}>{n.label}</a>)}
+        <a href={labHref} className="lab-link" onClick={() => setMenu(false)}>{C.lab.label}</a>
+        <div className="row">
+          <a href={C.socials.fiverr} target="_blank" rel="noopener noreferrer" className="btn btn--fiverr btn--sm">Fiverr</a>
+          <a href={C.socials.upwork} target="_blank" rel="noopener noreferrer" className="btn btn--upwork btn--sm">Upwork</a>
+          <a href={href("#contact")} className="btn btn--accent btn--sm" onClick={() => setMenu(false)}>Book a call</a>
+        </div>
+      </div>}
+    </nav>
+  );
+}
+
+export default function Portfolio() {
   const [faqCat, setFaqCat] = useState(Object.keys(C.faq.categories)[0]);
   const [openQ, setOpenQ] = useState(0);
   const [form, setForm] = useState({ first: "", last: "", email: "", company: "", msg: "" });
@@ -651,26 +688,7 @@ export default function Portfolio() {
     <div className="pf">
       <style>{THEME}{CSS}</style>
 
-      <nav className="nav">
-        <div className="nav-inner">
-          <a href="#home" className="logo"><span className="t">{C.brandTop}</span><span className="s">{C.brandSub}</span></a>
-          <div className="nav-links">{C.nav.map((n) => <a key={n.label} href={n.href}>{n.label}</a>)}</div>
-          <div className="nav-right">
-            <a href={C.socials.fiverr} target="_blank" rel="noopener noreferrer" className="btn btn--fiverr btn--sm">Fiverr</a>
-            <a href={C.socials.upwork} target="_blank" rel="noopener noreferrer" className="btn btn--upwork btn--sm">Upwork</a>
-            <a href="#contact" className="btn btn--accent btn--sm">Book a call</a>
-            <button className="nav-toggle" onClick={() => setMenu(!menu)} aria-label="Menu">{menu ? <X /> : <Menu />}</button>
-          </div>
-        </div>
-        {menu && <div className="wrap mobile">
-          {C.nav.map((n) => <a key={n.label} href={n.href} onClick={() => setMenu(false)}>{n.label}</a>)}
-          <div className="row">
-            <a href={C.socials.fiverr} target="_blank" rel="noopener noreferrer" className="btn btn--fiverr btn--sm">Fiverr</a>
-            <a href={C.socials.upwork} target="_blank" rel="noopener noreferrer" className="btn btn--upwork btn--sm">Upwork</a>
-            <a href="#contact" className="btn btn--accent btn--sm" onClick={() => setMenu(false)}>Book a call</a>
-          </div>
-        </div>}
-      </nav>
+      <Nav />
 
       <header id="home" className="hero">
         <div className="wrap hero-grid">
@@ -728,27 +746,6 @@ export default function Portfolio() {
               ))}
             </div>
           </Reveal>
-        </div>
-      </section>
-
-      <section id="open-source" className="sec">
-        <div className="wrap">
-          <Reveal><div className="head"><span className="badge"><span className="a">{C.openSource.badgeA}</span><span className="b">{C.openSource.badgeB}</span></span><h2>{C.openSource.heading[0]} <U>{C.openSource.heading[1]}</U></h2><p className="intro">{C.openSource.intro}</p></div></Reveal>
-          <div className="os-grid">
-            {C.openSource.items.map((o) => (
-              <div className="os-card" key={o.name}>
-                <span className="kind">{o.kind}</span>
-                <h3>{o.name}</h3>
-                <p>{o.blurb}</p>
-                <div className="chips">{o.tags.map((t) => <span className="chip" key={t}><i />{t}</span>)}</div>
-                <div className="os-actions">
-                  <a href={o.repo} target="_blank" rel="noopener noreferrer" className="btn btn--accent btn--sm"><Github size={15} /> View on GitHub</a>
-                  {o.article && <a href={o.article} target="_blank" rel="noopener noreferrer" className="btn btn--white btn--sm">Read the article <ArrowUpRight size={15} /></a>}
-                </div>
-              </div>
-            ))}
-          </div>
-          <p className="os-note">{C.openSource.disclaimer}</p>
         </div>
       </section>
 
@@ -873,7 +870,7 @@ export default function Portfolio() {
         <footer className="footer">
           <div className="wrap foot-grid">
             <div className="foot-brand"><a href="#home" className="logo"><span className="t" style={{ color: "#fff" }}>{C.brandTop}</span><span className="s">{C.brandSub}</span></a><p>Independent security engineering — SIEM, detection, automation, and endpoint hardening for teams that want to scale their defense without the overhead.</p></div>
-            <div className="foot-col"><h4>Navigate</h4>{C.nav.map((n) => <a key={n.label} href={n.href}>{n.label}</a>)}</div>
+            <div className="foot-col"><h4>Navigate</h4>{C.nav.map((n) => <a key={n.label} href={n.href}>{n.label}</a>)}<a href={C.lab.href}>{C.lab.label}</a></div>
             <div className="foot-col"><h4>Freelance</h4><a href={C.socials.fiverr} target="_blank" rel="noopener noreferrer">Fiverr</a><a href={C.socials.upwork} target="_blank" rel="noopener noreferrer">Upwork</a><a href={C.socials.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a><a href={C.socials.github} target="_blank" rel="noopener noreferrer">GitHub</a></div>
             <div className="foot-col"><h4>Contact</h4><a href={`mailto:${C.contact.email}`}>{C.contact.email}</a><a href="#contact">Book a call</a></div>
           </div>

@@ -1,9 +1,17 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { resolve } from 'path'
 
-// base: './' makes all asset paths relative, so the site works whether it's
-// served from https://<user>.github.io/<repo>/ or a custom domain — no edits needed.
+// Two pages: the main portfolio (index.html) and the Open Source Lab (open-source/index.html).
 export default defineConfig({
   plugins: [react()],
   base: './',
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        openSource: resolve(__dirname, 'open-source/index.html'),
+      },
+    },
+  },
 })
