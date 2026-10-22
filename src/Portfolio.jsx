@@ -140,6 +140,10 @@ const C = {
   },
 };
 
+/* Web3Forms public access key — sends contact-form messages to your inbox.
+   Safe to keep in site code (it can only deliver form messages to you). */
+const WEB3FORMS_KEY = "4cdaa759-02ea-4d8e-a500-26645b81270a";
+
 /* ============================================================
    THEME — every color is a variable.
    ============================================================ */
@@ -233,6 +237,8 @@ const CSS = `
   .hero h1 { font-size: clamp(36px, 5.4vw, 60px); font-weight: 700; line-height: 1.02; margin: 22px 0 8px; }
   .hero h1 .gray { color: #9AA3B4; }
   .hero .script { font-family: var(--f-script); color: var(--accent); font-weight: 700; font-size: clamp(38px, 5.8vw, 64px); margin-left: 10px; display: inline-block; }
+  .tw-line { display: block; white-space: nowrap; height: 1.15em; line-height: 1.15; margin-top: 6px; }
+  .tw-line .script { margin-left: 0; font-size: clamp(34px, 5.4vw, 60px); }
   .tw-caret { display: inline-block; margin-left: 1px; color: var(--accent); font-weight: 400; animation: blink 1s step-end infinite; }
   @keyframes blink { 50% { opacity: 0; } }
   .hero p.lead { color: var(--body); font-size: 18px; max-width: 500px; margin: 22px 0 30px; }
@@ -575,7 +581,45 @@ export default function Portfolio() {
   const [faqCat, setFaqCat] = useState(Object.keys(C.faq.categories)[0]);
   const [openQ, setOpenQ] = useState(0);
   const [form, setForm] = useState({ first: "", last: "", email: "", company: "", msg: "" });
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState("idle"); // idle | sending | success | error
+  const [formError, setFormError] = useState("");
+  const [botcheck, setBotcheck] = useState(false);
+
+  const sendMessage = async () => {
+    setFormError("");
+    if (!form.first.trim() || !form.last.trim() || !form.email.trim() || !form.company.trim()) {
+      setStatus("error"); setFormError("Fill in your first name, last name, email and company, then send again."); return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      setStatus("error"); setFormError("That email address doesn't look right. Check it and send again."); return;
+    }
+    setStatus("sending");
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: `New portfolio inquiry from ${form.first} ${form.last} (${form.company})`,
+          from_name: "Portfolio contact form",
+          name: `${form.first} ${form.last}`,
+          email: form.email,
+          replyto: form.email,
+          company: form.company,
+          message: form.msg || "(no message)",
+          botcheck,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setStatus("success");
+        setForm({ first: "", last: "", email: "", company: "", msg: "" });
+      } else { throw new Error(data.message || "Send failed"); }
+    } catch (err) {
+      setStatus("error");
+      setFormError(`The message didn't send. Email me directly at ${C.contact.email}.`);
+    }
+  };
 
   return (
     <div className="pf">
@@ -606,7 +650,7 @@ export default function Portfolio() {
         <div className="wrap hero-grid">
           <div>
             <span className="pill"><span className="dot" />{C.hero.pill}</span>
-            <h1>{C.hero.line1}<br />{C.hero.line2}<br />{C.hero.line3Lead} <span className="gray">{C.hero.line3Gray}</span><Typewriter words={C.hero.rotating} /></h1>
+            <h1>{C.hero.line1}<br />{C.hero.line2}<br />{C.hero.line3Lead} <span className="gray">{C.hero.line3Gray}</span><span className="tw-line"><Typewriter words={C.hero.rotating} /></span></h1>
             <p className="lead">{C.hero.subtitle}</p>
             <div className="emailbar"><input placeholder={C.hero.inputPlaceholder} /><a href="#contact" className="btn btn--accent">{C.hero.cta}</a></div>
           </div>
@@ -770,8 +814,10 @@ export default function Portfolio() {
               <div className="field"><label>Professional email <span className="req">*</span></label><input type="email" placeholder="you@company.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
               <div className="field"><label>Company <span className="req">*</span></label><input placeholder="Your company name" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} /></div>
               <div className="field"><label>How can I help you?</label><textarea placeholder="Tell me about your project, goals and timeline..." value={form.msg} onChange={(e) => setForm({ ...form, msg: e.target.value })} /></div>
-              <button className="btn btn--accent" style={{ width: "100%" }} onClick={() => setSent(true)}>Send my message <ArrowRight size={16} /></button>
-              {sent && <div className="sent"><Check size={16} /> Message sent — I'll reply within 24 hours.</div>}
+              <input type="checkbox" name="botcheck" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ display: "none" }} checked={botcheck} onChange={(e) => setBotcheck(e.target.checked)} />
+              <button className="btn btn--accent" style={{ width: "100%", opacity: status === "sending" ? 0.7 : 1 }} disabled={status === "sending"} onClick={sendMessage}>{status === "sending" ? "Sending…" : <>Send my message <ArrowRight size={16} /></>}</button>
+              {status === "success" && <div className="sent" role="status"><Check size={16} /> Message sent. I'll reply within 24 hours.</div>}
+              {status === "error" && <div className="sent" role="alert" style={{ color: "var(--coral)" }}>{formError}</div>}
               <p className="form-note">By sending this form, you agree to be contacted regarding your request.</p>
             </div>
           </Reveal>
