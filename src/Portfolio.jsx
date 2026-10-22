@@ -25,11 +25,14 @@ const C = {
   },
   nav: [
     { label: "Home", href: "#home" },
-    { label: "Portfolio", href: "#projects" },
     { label: "Services", href: "#services" },
+    { label: "Open Source", href: "#open-source" },
+    { label: "Client work", href: "#projects" },
+    { label: "Contact", href: "#contact" },
   ],
   hero: {
-    pill: "Available for freelance work",
+    pill: "Wazuh Ambassador · Available for freelance work",
+    pillLink: "https://wazuh.com/ambassadors-program/",
     line1: "Information Security,",
     line2: "SIEM & Detection",
     line3Lead: "Engineering.",
@@ -63,8 +66,21 @@ const C = {
       { icon: Lock, title: "Infrastructure & IAM", blurb: "Hardening the systems everything runs on.", tags: ["Proxmox", "VMware ESXi", "pfSense", "Keycloak (SSO/OAuth2)", "Linux Hardening", "VLANs / VPN"] },
     ],
   },
+  openSource: {
+    badgeA: "Open Source", badgeB: "Wazuh Ambassador",
+    heading: ["Free tools for the", "Wazuh community"],
+    intro: "Detection content, dashboards and plugins I build and publish as a Wazuh Ambassador. Each one is free to use, documented step by step, and on GitHub.",
+    disclaimer: "Independent community projects. Not affiliated with, endorsed by, or supported by Wazuh, Inc.",
+    items: [
+      { name: "SourceWatch", kind: "Dashboard plugin", blurb: "Learns the normal rhythm of every log source, flags the ones that go quiet, and shows which detection rules and MITRE techniques you lose when they do.", tags: ["Log source health", "Silence detection", "MITRE ATT&CK"], repo: "https://github.com/DShamzaj/wazuh-sourcewatch" },
+      { name: "Shadow AI Detection", kind: "Detection framework", blurb: "Finds unapproved AI tool use across endpoints: LLM API calls, local runtimes like Ollama, AI browser extensions and exposed API keys. 50+ rules, SCA policy and dashboards.", tags: ["Rules & decoders", "SCA", "Active response"], repo: "https://github.com/DShamzaj/wazuh-shadow-ai-detection", article: "https://medium.com/@dev.hamzaj/detecting-shadow-ai-building-an-open-source-framework-for-wazuh-cdf43b908df0" },
+      { name: "NCA ECC Compliance Pack", kind: "Compliance pack", blurb: "Saudi NCA Essential Cybersecurity Controls (ECC-2:2024) mapped to native Wazuh capabilities, with a compliance dashboard and a demo data generator.", tags: ["NCA ECC-2:2024", "KSA", "Dashboards"], repo: "https://github.com/DShamzaj/wazuh-nca-ecc-compliance" },
+      { name: "BBOT EASM Integration", kind: "Integration", blurb: "Automated external attack surface monitoring. BBOT scans your domains every 24 hours, and new subdomains, ports and findings arrive as classified Wazuh alerts.", tags: ["EASM", "BBOT", "Custom rules"], repo: "https://github.com/DShamzaj/bbot-wazuh-easm", article: "https://medium.com/@dev.hamzaj/integrating-wazuh-4-14-with-bbot-3-x-for-external-attack-surface-management-hamzaj-91daf65f804e" },
+      { name: "SOC 2 Compliance Dashboards", kind: "Dashboards", blurb: "Five dashboards covering SOC 2 criteria CC5–CC8 and A1, built the way auditors read evidence: posture scores, 90-day trends and remediation registers.", tags: ["SOC 2", "Audit evidence", "Wazuh 4.14"], repo: "https://github.com/DShamzaj/wazuh-soc2-compliance-dashboards", article: "https://medium.com/@dev.hamzaj/soc-2-compliance-dashboards-on-wazuh-4-14-hamzaj-4b351126d485" },
+    ],
+  },
   projects: {
-    badgeA: "Work", badgeB: "Projects",
+    badgeA: "Work", badgeB: "Client projects",
     heading: ["Featured", "projects"],
     intro: "SOC builds, detection engineering, automation, and security assessments — drawn from real client work.",
     items: [
@@ -312,6 +328,16 @@ const CSS = `
   .proj-view { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--accent); }
   .proj-view span { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; }
 
+  .pill { transition: border-color .2s; } a.pill:hover { border-color: var(--accent); color: var(--ink); }
+  .os-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 40px; }
+  .os-card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 26px; display: flex; flex-direction: column; box-shadow: var(--shadow-sm); }
+  .os-card .kind { font-size: 13px; font-weight: 600; color: var(--accent); }
+  .os-card h3 { font-size: 21px; font-weight: 700; margin: 6px 0 10px; }
+  .os-card p { font-size: 14.5px; color: var(--body); margin-bottom: 16px; }
+  .os-card .chips { margin-bottom: 22px; }
+  .os-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: auto; }
+  .os-note { text-align: center; font-size: 13px; color: var(--sub); margin-top: 26px; }
+  .btn:focus-visible, .pill:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   .about-card { background: #E8F0FD; border: 1px solid #d6e4fa; border-radius: var(--r-card); padding: 40px; display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 44px; align-items: center; margin-top: 40px; }
   .portrait { aspect-ratio: 1/1; border-radius: 18px; overflow: hidden; background: #cdddf6; display: flex; align-items: center; justify-content: center; }
   .portrait img { width: 100%; height: 100%; object-fit: cover; }
@@ -535,10 +561,10 @@ function Mock({ kind }) {
         <div className="swatch"><i style={{ background: "#10131c" }} /><i style={{ background: "#2b3446" }} /><i style={{ background: "var(--accent)" }} /><i style={{ background: "#cdddf6" }} /></div>
       </div>
       <div className="m-card" style={{ position: "absolute", right: -28, bottom: -34, width: 190 }}>
-        <div className="m-row" style={{ margin: "0 0 12px" }}><span><b style={{ color: "var(--ink)", fontFamily: "var(--f-disp)", fontSize: 14 }}>Signal</b><br /><span className="m-lab">True positives</span></span><span className="m-chip m-green">99.9%</span></div>
+        <div className="m-row" style={{ margin: "0 0 12px" }}><span><b style={{ color: "var(--ink)", fontFamily: "var(--f-disp)", fontSize: 14 }}>Signal</b><br /><span className="m-lab">Custom rules & decoders</span></span><span className="m-chip m-green">Tuned</span></div>
         <div style={{ display: "flex", gap: 8 }}>
-          <div style={{ flex: 1 }}><div style={{ fontFamily: "var(--f-disp)", fontWeight: 700, fontSize: 18 }}>240+</div><div className="m-lab">Rules</div></div>
-          <div className="m-dark" style={{ flex: 1, borderRadius: 10, padding: "8px 10px" }}><div style={{ fontFamily: "var(--f-disp)", fontWeight: 700, fontSize: 18, color: "var(--green)" }}>0</div><div className="m-lab" style={{ color: "#8b94a6" }}>Dropped</div></div>
+          <div style={{ flex: 1 }}><div style={{ fontFamily: "var(--f-disp)", fontWeight: 700, fontSize: 18 }}>MITRE</div><div className="m-lab">ATT&CK mapped</div></div>
+          <div className="m-dark" style={{ flex: 1, borderRadius: 10, padding: "8px 10px" }}><div style={{ fontFamily: "var(--f-disp)", fontWeight: 700, fontSize: 18, color: "var(--green)" }}>Auto</div><div className="m-lab" style={{ color: "#8b94a6" }}>Active response</div></div>
         </div>
       </div>
     </div>
@@ -546,9 +572,9 @@ function Mock({ kind }) {
   if (kind === "automation") return (
     <div style={{ position: "relative", width: "100%", maxWidth: 340 }}>
       <div className="m-card">
-        <div className="m-row" style={{ margin: "0 0 4px" }}><b style={{ color: "var(--ink)", fontFamily: "var(--f-disp)" }}>Automated Tasks</b><span className="m-chip m-soft">+140 hrs</span></div>
-        <div className="m-lab" style={{ marginBottom: 14 }}>Last 30 days · Live</div>
-        {[["Alerts triaged", "12,450", "#10131c", "78%"], ["Enriched", "3,210", "#2b3446", "52%"], ["Auto-closed", "850", "var(--accent)", "34%"]].map((r, i) => (
+        <div className="m-row" style={{ margin: "0 0 4px" }}><b style={{ color: "var(--ink)", fontFamily: "var(--f-disp)" }}>Automated Tasks</b><span className="m-chip m-soft">Hands-off</span></div>
+        <div className="m-lab" style={{ marginBottom: 14 }}>Example playbook</div>
+        {[["Alerts triaged", "Automatic", "#10131c", "78%"], ["Enriched", "VirusTotal · MISP", "#2b3446", "52%"], ["Known-benign closed", "Rule-based", "var(--accent)", "34%"]].map((r, i) => (
           <div key={i} style={{ marginBottom: 12 }}>
             <div className="m-row" style={{ margin: 0 }}><span style={{ fontSize: 13, color: "var(--ink)" }}>{r[0]}</span><b style={{ fontSize: 13, color: "var(--ink)" }}>{r[1]}</b></div>
             <div className="mini-bar" style={{ width: r[3], background: r[2] }} />
@@ -565,7 +591,7 @@ function Mock({ kind }) {
   );
   return (
     <div className="m-card" style={{ width: "100%", maxWidth: 360 }}>
-      <div className="m-row" style={{ margin: 0 }}><b style={{ color: "var(--ink)", fontFamily: "var(--f-disp)" }}>Traffic &amp; Threats</b><span className="m-chip m-dark">Uptime 99.99%</span></div>
+      <div className="m-row" style={{ margin: 0 }}><b style={{ color: "var(--ink)", fontFamily: "var(--f-disp)" }}>Traffic &amp; Threats</b><span className="m-chip m-dark">Monitored</span></div>
       <div style={{ fontSize: 12, color: "var(--sub)", margin: "6px 0 12px" }}>Threats blocked vs valid traffic</div>
       <div style={{ display: "flex", gap: 16, fontSize: 11, color: "var(--body)" }}>
         <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><i style={{ width: 9, height: 9, borderRadius: 3, background: "var(--accent)", display: "inline-block" }} />Valid</span>
@@ -649,7 +675,7 @@ export default function Portfolio() {
       <header id="home" className="hero">
         <div className="wrap hero-grid">
           <div>
-            <span className="pill"><span className="dot" />{C.hero.pill}</span>
+            <a className="pill" href={C.hero.pillLink} target="_blank" rel="noopener noreferrer"><span className="dot" />{C.hero.pill}</a>
             <h1>{C.hero.line1}<br />{C.hero.line2}<br />{C.hero.line3Lead} <span className="gray">{C.hero.line3Gray}</span><span className="tw-line"><Typewriter words={C.hero.rotating} /></span></h1>
             <p className="lead">{C.hero.subtitle}</p>
             <div className="emailbar"><input placeholder={C.hero.inputPlaceholder} /><a href="#contact" className="btn btn--accent">{C.hero.cta}</a></div>
@@ -705,6 +731,27 @@ export default function Portfolio() {
         </div>
       </section>
 
+      <section id="open-source" className="sec">
+        <div className="wrap">
+          <Reveal><div className="head"><span className="badge"><span className="a">{C.openSource.badgeA}</span><span className="b">{C.openSource.badgeB}</span></span><h2>{C.openSource.heading[0]} <U>{C.openSource.heading[1]}</U></h2><p className="intro">{C.openSource.intro}</p></div></Reveal>
+          <div className="os-grid">
+            {C.openSource.items.map((o) => (
+              <div className="os-card" key={o.name}>
+                <span className="kind">{o.kind}</span>
+                <h3>{o.name}</h3>
+                <p>{o.blurb}</p>
+                <div className="chips">{o.tags.map((t) => <span className="chip" key={t}><i />{t}</span>)}</div>
+                <div className="os-actions">
+                  <a href={o.repo} target="_blank" rel="noopener noreferrer" className="btn btn--accent btn--sm"><Github size={15} /> View on GitHub</a>
+                  {o.article && <a href={o.article} target="_blank" rel="noopener noreferrer" className="btn btn--white btn--sm">Read the article <ArrowUpRight size={15} /></a>}
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="os-note">{C.openSource.disclaimer}</p>
+        </div>
+      </section>
+
       <section id="projects" className="sec">
         <div className="wrap">
           <div className="dark-panel">
@@ -713,9 +760,9 @@ export default function Portfolio() {
               {C.projects.items.map((p, i) => (
                 <Reveal key={i} delay={(i % 3) * 0.08}>
                   <div className="proj">
-                    <div className="proj-thumb"><ProjThumb visual={p.visual} /><span className="go"><ArrowUpRight size={17} /></span></div>
+                    <div className="proj-thumb"><ProjThumb visual={p.visual} /></div>
                     <div className="proj-body"><span className="lab">{p.label}</span><h3>{p.name}</h3><p>{p.blurb}</p>
-                      <div className="proj-foot"><span className="proj-cat"><i />{p.cat}</span><a href="#contact" className="proj-view">View project <span><ArrowRight size={14} /></span></a></div>
+                      <div className="proj-foot"><span className="proj-cat"><i />{p.cat}</span><a href="#contact" className="proj-view">Discuss a similar project <span><ArrowRight size={14} /></span></a></div>
                     </div>
                   </div>
                 </Reveal>
